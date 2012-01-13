@@ -6,11 +6,8 @@ p=. Version 1.2 -- 10 January 2011
 
 p=. By "Jim Dovey":mailto:jimdovey@mac.com <br />
 
-...but the original author hasn't bothered to update it in more than a year, leaving 200 stranded forks on GitHub.
+...but the original author hasn't updated in more than a year, with 100+ stranded forks on GitHub.
 
-A huge pity, since it could have been a useful library, until Jim let it rot and become ForkHell.
-
-This fork is - like all the others - probably just fixing basic bugs that have been fixed a hundred times already, but
-so long as Jim won't merge fixes in, nothing we can do. We all have to re-invent the wheel.
+This fork is - like all the others - probably just fixing basic bugs that have been fixed a hundred times already, butwe all have to re-invent the wheel.
 
 Welcome to modern Open Source: UNcollaborative development.
