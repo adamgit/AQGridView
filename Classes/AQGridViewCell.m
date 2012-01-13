@@ -34,6 +34,8 @@
  *
  */
 
+#define AQ_SOURCE_BREAKS_APPLE_LIBRARIES_SO_WE_REMOVE_THE_CRAP_THAT_SHOULDNT_BE_THERE 0
+
 #import "AQGridViewCell.h"
 #import "AQGridViewCell+AQGridViewCellPrivate.h"
 #import "UIColor+AQGridView.h"
@@ -45,24 +47,21 @@
 #endif
 
 @interface AQGridViewCell ()
-@property (nonatomic, retain) UIView * contentView;
-@property (nonatomic, copy) NSString * reuseIdentifier;
 - (void) flipHighlightTimerFired: (NSTimer *) timer;
 @end
 
 @implementation AQGridViewCell
 
-@synthesize contentView=_contentView, backgroundView=_backgroundView, selectedBackgroundView=_selectedBackgroundView;
-@synthesize reuseIdentifier=_reuseIdentifier, selectionGlowColor=_selectionGlowColor;
+@synthesize AQseparatorColor=_AQseparatorColor;
+@synthesize selectionGlowColor=_selectionGlowColor;
 @synthesize selectionGlowShadowRadius=_selectionGlowShadowRadius;
 
 - (id) initWithFrame: (CGRect) frame reuseIdentifier: (NSString *) reuseIdentifier
 {
-	self = [super initWithFrame: frame];
+	self = [super initWithFrame: frame reuseIdentifier:reuseIdentifier];
 	if ( self == nil )
 		return ( nil );
 	
-	self.reuseIdentifier = reuseIdentifier;
 	_cellFlags.usingDefaultSelectedBackgroundView = 1;
 	_cellFlags.separatorStyle = AQGridViewCellSeparatorStyleEmptySpace;
 	
@@ -118,32 +117,17 @@
 	return ( NSOrderedSame );
 }
 
-- (UIView *) contentView
-{
-	if ( _contentView == nil )
-    {
-		_contentView = [[UIView alloc] initWithFrame: self.bounds];
-        _contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-        _contentView.autoresizesSubviews = YES;
-        self.autoresizesSubviews = YES;
-        _contentView.backgroundColor = [UIColor whiteColor];
-		[_contentView.layer setValue: [NSNumber numberWithBool: YES] forKey: @"KoboHackInterestingLayer"];
-        [self addSubview: _contentView];
-    }
-	return ( _contentView );
-}
-
 - (CALayer *) glowSelectionLayer
 {
-	return ( _contentView.layer );
+	return ( self.contentView.layer );
 }
 
-- (AQGridViewCellSelectionStyle) selectionStyle
+- (AQGridViewCellSelectionStyle) AQselectionStyle
 {
 	return ( _cellFlags.selectionStyle );
 }
 
-- (void) setSelectionStyle: (AQGridViewCellSelectionStyle) style
+- (void) setAQselectionStyle: (AQGridViewCellSelectionStyle) style
 {
 	if ( (style == AQGridViewCellSelectionStyleGlow) && ([CALayer instancesRespondToSelector: @selector(shadowPath)] == NO) )
 		style = AQGridViewCellSelectionStyleGray;
@@ -286,9 +270,10 @@
 	}
 }
 
+#if AQ_SOURCE_BREAKS_APPLE_LIBRARIES_SO_WE_REMOVE_THE_CRAP_THAT_SHOULDNT_BE_THERE
 - (void) _beginBackgroundHighlight: (BOOL) highlightOn animated: (BOOL) animated
 {
-	if ( (_cellFlags.usingDefaultSelectedBackgroundView == 1) && (_selectedBackgroundView == nil) )
+	if ( (_cellFlags.usingDefaultSelectedBackgroundView == 1) && (self.selectedBackgroundView == nil) )
 	{
         NSString *imageName = nil;
 #ifdef BUILTIN_IMAGES
@@ -400,6 +385,7 @@
 			[self resetHighlightForSubviewsOfView: self];
 	}
 }
+#endif
 
 - (void) flipHighlightTimerFired: (NSTimer *) timer
 {
@@ -425,7 +411,9 @@
 		[UIView setAnimationsEnabled: YES];
 		
 		_cellFlags.highlighted = 0;
+#if AQ_SOURCE_BREAKS_APPLE_LIBRARIES_SO_WE_REMOVE_THE_CRAP_THAT_SHOULDNT_BE_THERE
 		[_selectedBackgroundView removeFromSuperview];
+#endif
 		CFDictionaryRemoveAllValues( _selectionColorInfo );
 	}
 	
@@ -463,7 +451,9 @@
 		case AQGridViewCellSelectionStyleGreen:
 		case AQGridViewCellSelectionStyleRed:
 		{
+#if AQ_SOURCE_BREAKS_APPLE_LIBRARIES_SO_WE_REMOVE_THE_CRAP_THAT_SHOULDNT_BE_THERE
 			[self _beginBackgroundHighlight: value animated: animated];
+#endif
 			break;
 		}
 			
@@ -508,6 +498,7 @@
 		[self highlightAnimationStopped: @"" context: NULL];
 }
 
+#if AQ_SOURCE_BREAKS_APPLE_LIBRARIES_SO_WE_REMOVE_THE_CRAP_THAT_SHOULDNT_BE_THERE
 - (void) setBackgroundView: (UIView *) aView
 {
 	if ( aView == _backgroundView )
@@ -532,6 +523,7 @@
 	_backgroundView.frame = bgFrame;
 	[self insertSubview: _backgroundView atIndex: 0];
 }
+#endif
 
 - (void) layoutSubviews
 {
@@ -551,7 +543,7 @@
 				[self insertSubview: _bottomSeparatorView atIndex: 0];
 			}
 			
-			_bottomSeparatorView.backgroundColor = (_separatorColor == nil ? [UIColor AQDefaultGridCellSeparatorColor] : _separatorColor);
+			_bottomSeparatorView.backgroundColor = ( self.AQseparatorColor == nil ? [UIColor AQDefaultGridCellSeparatorColor] : self.AQseparatorColor);
 			
 			cFrame.size.height -= 1.0;
 		}
@@ -570,7 +562,7 @@
 				[self insertSubview: _rightSeparatorView atIndex: 0];
 			}
 			
-			_rightSeparatorView.backgroundColor = (_separatorColor == nil ? [UIColor AQDefaultGridCellSeparatorColor] : _separatorColor);
+			_rightSeparatorView.backgroundColor = ( self.AQseparatorColor == nil ? [UIColor AQDefaultGridCellSeparatorColor] : self.AQseparatorColor);
 			
 			cFrame.size.width -= 1.0;
 		}
@@ -593,6 +585,7 @@
 	_cellFlags.selectionGlowColorSet = (aColor == nil ? 0 : 1);
 }
 
+#if AQ_SOURCE_BREAKS_APPLE_LIBRARIES_SO_WE_REMOVE_THE_CRAP_THAT_SHOULDNT_BE_THERE
 - (void) setSelectedBackgroundView: (UIView *) aView
 {
 	if ( aView == _selectedBackgroundView )
@@ -619,6 +612,7 @@
 	
 	_cellFlags.usingDefaultSelectedBackgroundView = (aView == nil ? 1 : 0);
 }
+#endif
 
 - (void) prepareForReuse
 {
@@ -644,21 +638,6 @@
 
 @implementation AQGridViewCell (AQGridViewCellPrivate)
 
-- (UIColor *) separatorColor
-{
-	return ( _separatorColor );
-}
-
-- (void) setSeparatorColor: (UIColor *) color
-{
-	if ( _separatorColor == color )
-		return;
-	
-	_separatorColor = color;
-	
-	_bottomSeparatorView.backgroundColor = _separatorColor;
-	_rightSeparatorView.backgroundColor = _separatorColor;
-}
 
 - (AQGridViewCellSeparatorStyle) separatorStyle
 {

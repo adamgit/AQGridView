@@ -1146,8 +1146,15 @@ NSString * const AQGridViewSelectionDidChangeNotification = @"AQGridViewSelectio
 - (void) selectItemAtIndex: (NSUInteger) index animated: (BOOL) animated
 			scrollPosition: (AQGridViewScrollPosition) scrollPosition
 {
+	if( index > [self.dataSource numberOfItemsInGridView:self] )
+	{
+		NSLog(@"[%@] ERROR: attempted to select item at out-of-bounds index = %i", [self class], index );
+	}
+	else
+	{
 	[self _selectItemAtIndex: index animated: animated scrollPosition: scrollPosition notifyDelegate: NO
            numFingersTouch: 1];
+	}
 }
 
 - (void) deselectItemAtIndex: (NSUInteger) index animated: (BOOL) animated
@@ -1205,10 +1212,12 @@ NSString * const AQGridViewSelectionDidChangeNotification = @"AQGridViewSelectio
 
 	_separatorColor = color;
 
+#if AQ_SOURCE_BREAKS_APPLE_LIBRARIES_SO_WE_REMOVE_THE_CRAP_THAT_SHOULDNT_BE_THERE
 	for ( AQGridViewCell * cell in _visibleCells )
 	{
 		cell.separatorColor = _separatorColor;
 	}
+#endif
 }
 
 #pragma mark -
@@ -1230,6 +1239,9 @@ NSString * const AQGridViewSelectionDidChangeNotification = @"AQGridViewSelectio
 
 - (BOOL) _canSelectItemContainingHitView: (UIView *) hitView
 {
+	if( hitView == self )
+		return TRUE;
+	
 	if ( [hitView isKindOfClass: [UIControl class]] )
 		return ( NO );
 
@@ -1317,7 +1329,7 @@ NSString * const AQGridViewSelectionDidChangeNotification = @"AQGridViewSelectio
 	_flags.ignoreTouchSelect = ([self isDragging] ? 1 : 0);
 
 	UITouch * touch = [touches anyObject];
-	_touchBeganPosition = [touch locationInView: nil];
+	_touchBeganPosition = [touch locationInView: self];
 	if ( (touch != nil) && (_pendingSelectionIndex == NSNotFound) )
 	{
 		CGPoint pt = [touch locationInView: self];
